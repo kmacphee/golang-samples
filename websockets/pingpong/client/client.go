@@ -15,14 +15,16 @@ import (
 var server = flag.String("server", "localhost:80", "server address")
 
 func main() {
+    flag.Parse()
+
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
 	// Create log file and logger.
 	logFile, err := os.Create("ping.log")
 	if err != nil {
-		fmt.Println("Failed to create ping.log")
-		return
+		fmt.Fprintf(os.Stderr, "Failed to create ping.log")
+		os.Exit(1)
 	}
 	defer logFile.Close()
 	log := log.New(logFile, "", log.Lmicroseconds)
@@ -36,7 +38,9 @@ func main() {
 
 	conn, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
 	if err != nil {
-		log.Fatal("Dial Error: ", err)
+        fmt.Fprintf(os.Stderr, "Failed to dial: %s. %s\n", url.String(), err)
+		log.Printf("Failed to dial: %s. %s", url.String(), err)
+        os.Exit(1)
 	}
 	defer conn.Close()
 
