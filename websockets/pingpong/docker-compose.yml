@@ -1,0 +1,10 @@
+version: '3'
+services:
+  server:
+    image: kmacphee/golang-samples/websockets/pingpong/server
+  client:
+    image: kmacphee/golang-samples/websockets/pingpong/client
+    links:
+      - server:pongserver
+    environment:
+      - SERVER=pongserver
