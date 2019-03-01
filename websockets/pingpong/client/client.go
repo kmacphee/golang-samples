@@ -12,7 +12,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var server = flag.String("server", "localhost:80", "server address")
+var server = flag.String("server", "ws://localhost:80/pingpong", "server address")
 
 func main() {
     flag.Parse()
@@ -29,17 +29,12 @@ func main() {
 	defer logFile.Close()
 	log := log.New(logFile, "", log.Lmicroseconds)
 
-	url := url.URL {
-		Scheme: "ws",
-		Host: *server,
-		Path: "/pingpong",
-	}
-	log.Printf("Making connection to: %s", url.String())
+	log.Printf("Making connection to: %s", server)
 
-	conn, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
+	conn, _, err := websocket.DefaultDialer.Dial(server, nil)
 	if err != nil {
-        fmt.Fprintf(os.Stderr, "Failed to dial: %s. %s\n", url.String(), err)
-		log.Printf("Failed to dial: %s. %s", url.String(), err)
+        fmt.Fprintf(os.Stderr, "Failed to dial: %s. %s\n", server, err)
+		log.Printf("Failed to dial: %s. %s", server, err)
         os.Exit(1)
 	}
 	defer conn.Close()
@@ -65,7 +60,7 @@ func main() {
 				return
 			}
 			// We don't recognize any message that is not "pong".
-			if msg := string(bytes[:]); msgType != websocket.TextMessage && msg != "pong" {
+			if msg := string(bytes); msgType != websocket.TextMessage && msg != "pong" {
 				log.Println("Unrecognized message received.")
 				continue
 			} else {
