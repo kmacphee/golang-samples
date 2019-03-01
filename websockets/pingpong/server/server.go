@@ -48,7 +48,7 @@ func handler(res http.ResponseWriter, req *http.Request) {
 		}
 
 		// We don't recognize any message that is not "ping".
-		if msg := string(bytes[:]); msgType != websocket.TextMessage && msg != "ping" {
+		if msg := string(bytes); msgType != websocket.TextMessage && msg != "ping" {
 			log.Println("Unrecognized message received.")
 			continue
 		} else {
